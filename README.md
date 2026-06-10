@@ -33,4 +33,14 @@ python demo/gradio_demo.py --base_model merged-sft-qwen-0.5b --lora_model output
 ```
 
 ## 面试与项目展示指北
-*“不跑一遍，面试一定露馅”* —— 本项目不仅跑通了代码，更打通了数据流向与评估验证的闭环。你可以清晰地阐述自己如何通过清洗某批数据，使得 C-Eval 医疗得分提高了 xxx，以及解决了训练过程中由于 Batch Size 或学习率导致的 Loss 抖动问题。
+*”不跑一遍，面试一定露馅”* —— 本项目不仅跑通了代码，更打通了数据流向与评估验证的闭环。你可以清晰地阐述自己如何通过清洗某批数据，使得 C-Eval 医疗得分提高了 xxx，以及解决了训练过程中由于 Batch Size 或学习率导致的 Loss 抖动问题。
+
+## 致谢
+
+本项目在开发过程中参考和使用了以下优秀的开源项目，在此表示诚挚的感谢：
+
+- **[HealthAI-2025](https://github.com/yuandaxia2001/HealthAI-2025)** — 数据构造思路借鉴了该项目在临床医学数据处理中的向量检索筛选与知识蒸馏方法，为本项目的数据构建管线提供了重要参考。
+- **[MedicalGPT](https://github.com/shibing624/MedicalGPT)** — 项目基于 MedicalGPT（Apache License 2.0）进行深度适配和超参调优，其完善的 SFT / RLHF / DPO 训练框架是模型训练模块的核心基础。
+- **[lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)** — 使用 EleutherAI 开源的评测框架（MIT License）作为模型评测的统一基准，实现了对多维度医学场景的客观量化评估。
+
+各项目的代码版权及开源协议归其原作者所有。
