@@ -1,158 +1,36 @@
-# MedGPT-RL：基于 RLHF 的医疗领域大语言模型对齐训练
+# Medical-GPT 医疗大模型全流程开源项目
 
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/Sinvt/MedGPT-RL?style=social)](https://github.com/Sinvt/MedGPT-RL)
+本项目展示了一个完整的垂直领域大模型训练与评测闭环。包含了从**数据构建**到**模型训练**，再到**自动化评测**的完整工作流。基于此套流程，可以快速复现并改进微调模型的性能，最终打造出一个具备强大医疗知识与推理能力的“赛博医生”。
 
-> 基于 ChatGPT 训练范式，完整实现医疗大模型的 **SFT → Reward Modeling → PPO** 强化学习对齐全流程，并对比 DPO、GRPO 等主流偏好优化方法在医疗场景下的效果差异。
+## 架构说明
 
----
+本项目分为三个核心模块，对应大模型工程师在业务落地时的三大核心链路：
 
-## 📖 项目简介
+### 📁 1. 数据构建 (`1_Data_Construction/`)
+数据是模型的基础。本目录用于存放数据爬取、清洗、格式化转换、向量化匹配召回以及偏好数据构造的脚本。
+- **思路参考**：`HealthAI-2025` 数据构造方法。
+- **目标**：为 SFT（监督微调）和 PPO（强化学习）阶段提供高质量、格式对齐的数据源。
 
-本项目以医疗问答场景为切入点，围绕 **RLHF（Reinforcement Learning from Human Feedback）** 展开，系统性地复现并对比了当前主流的大模型对齐方法。
+### 📁 2. 模型训练 (`2_Model_Training/`)
+核心炼丹炉。包含完整的 `SFT -> Reward Model -> PPO` 三阶段训练管线代码及执行脚本。
+- 基于开源项目 `MedicalGPT` 进行深度适配和超参调优。
+- 支持 `Qwen` 等主流大模型基座的 LoRA/QLoRA 训练。
+- 提供终端及 Web 网页（Gradio）交互测试脚本。
 
-### 核心目标
-- 完整走通 **SFT → RM → PPO** 的经典 RLHF Pipeline
-- 对比 **DPO / ORPO / GRPO** 等免 RM 的偏好优化方法与传统 RLHF 的效果差异
-- 探索不同对齐策略在医疗安全性（Helpful, Honest, Harmless）维度上的表现
+### 📁 3. 模型评测 (`3_Evaluation/`)
+模型的考官。使用业内公认的 `lm-evaluation-harness` 评测框架。
+- 支持加载合并后的权重（Base+LoRA）或直接挂载 Adapter 进行测试。
+- 可对中文医疗榜单（如 `ceval-valid` 的医疗子项、`cmmlu`、`medmcqa` 等）进行打分。
+- **目标**：用量化的分数取代主观判断，为每一步数据迭代和算法优化提供可靠的证据链。
 
----
+## 快速开始
 
-## 🏗️ 技术路线
-
-本项目的训练流程遵循 [Andrej Karpathy - State of GPT](https://karpathy.ai/stateofgpt.pdf) 中提出的训练范式：
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Stage 1    │     │  Stage 2    │     │  Stage 3    │     │  Stage 4    │
-│  增量预训练  │ ──▶ │  有监督微调  │ ──▶ │  奖励模型   │ ──▶ │  强化学习   │
-│  (PT)       │     │  (SFT)      │     │  (RM)       │     │  (PPO)      │
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
-                                              │
-                                              ▼
-                                    ┌───────────────────┐
-                                    │  平替方案（无需RM） │
-                                    │  DPO / ORPO / GRPO│
-                                    └───────────────────┘
-```
-
-### 各阶段说明
-
-| 阶段 | 名称 | 说明 | 训练脚本 |
-|:---:|:---:|------|:---:|
-| Stage 1 | **PT** (Continue PreTraining) | 在医疗领域文档上进行增量预训练，让模型适应领域数据分布 | `training/pretraining.py` |
-| Stage 2 | **SFT** (Supervised Fine-tuning) | 使用医疗问答指令数据进行有监督微调，对齐指令意图 | `training/supervised_finetuning.py` |
-| Stage 3 | **RM** (Reward Modeling) | 基于人类偏好排序数据训练奖励模型，建模 HHH 原则 | `training/reward_modeling.py` |
-| Stage 4 | **PPO** (Reinforcement Learning) | 使用 RM 作为奖励信号，通过 PPO 算法优化 SFT 模型的策略 | `training/ppo_training.py` |
-| Alt | **DPO** (Direct Preference Optimization) | 无需 RM，直接在偏好数据上优化语言模型 | `training/dpo_training.py` |
-| Alt | **GRPO** (Group Relative Policy Optimization) | 纯 RL 方法，通过组内相对奖励信号优化策略 | `training/grpo_training.py` |
-
----
-
-## 📁 项目结构
-
-```
-MedGPT-RL/
-├── training/                # 核心训练脚本
-│   ├── pretraining.py                 # Stage 1: 增量预训练 (PT)
-│   ├── supervised_finetuning.py       # Stage 2: 有监督微调 (SFT)
-│   ├── reward_modeling.py             # Stage 3: 奖励模型 (RM)
-│   ├── ppo_training.py                # Stage 4: 强化学习 (PPO)
-│   ├── dpo_training.py                # 直接偏好优化 (DPO)
-│   ├── grpo_training.py               # GRPO
-│   ├── orpo_training.py               # ORPO
-│   └── template.py                    # 对话模板定义
-│
-├── scripts/                 # 一键运行脚本 + DeepSpeed 配置
-│   ├── run_sft.sh / run_rm.sh / run_ppo.sh / run_dpo.sh / ...
-│   └── zero1.json / zero2.json / zero3.json
-│
-├── data/                    # 训练数据
-│   ├── sft/                           # SFT 指令微调数据
-│   └── reward/                        # RM/DPO 偏好对比数据
-│
-├── demo/                    # 推理与部署示例
-│   ├── inference.py                   # 命令行推理
-│   └── gradio_demo.py                 # Web UI 演示
-│
-├── tools/                   # 工具脚本
-│   ├── merge_peft_adapter.py          # LoRA 权重合并
-│   └── model_quant.py                 # 模型量化
-│
-└── notebooks/               # Colab 端到端教程
-    ├── run_training_ppo_pipeline.ipynb # PT+SFT+RM+PPO 全流程
-    └── run_training_dpo_pipeline.ipynb # PT+SFT+DPO 全流程
-```
-
----
-
-## 🚀 快速开始
-
-### 环境安装
-
+进入各个子模块，查看其内部的具体运行说明。
+例如，要启动网页版对话测试：
 ```bash
-git clone https://github.com/Sinvt/MedGPT-RL.git
-cd MedGPT-RL
-pip install -r requirements.txt
+cd 2_Model_Training
+python demo/gradio_demo.py --base_model merged-sft-qwen-0.5b --lora_model outputs-ppo-qwen-0.5b
 ```
 
-### 硬件需求参考
-
-| 训练方法 | 精度 | 7B 模型 | 13B 模型 |
-|:---:|:---:|:---:|:---:|
-| LoRA | FP16 | 16GB | 32GB |
-| QLoRA | INT4 | 6GB | 12GB |
-
-### 训练示例
-
-```bash
-# Step 1: 有监督微调 (SFT)
-bash scripts/run_sft.sh
-
-# Step 2: 奖励模型训练 (RM)
-bash scripts/run_rm.sh
-
-# Step 3: 强化学习训练 (PPO)
-bash scripts/run_ppo.sh
-
-# 或者用 DPO 一步到位（无需 RM）
-bash scripts/run_dpo.sh
-```
-
----
-
-## 📊 实验结果
-
-> 🚧 实验进行中，后续将补充：
-> - 各阶段训练的 loss 曲线
-> - SFT vs RLHF vs DPO 在医疗问答上的对比评测
-> - 典型 case 分析（好回答 vs 差回答的对比）
-> - 安全性维度（HHH）的评估结果
-
----
-
-## 🔭 后续计划
-
-- [ ] 跑通完整 SFT → RM → PPO Pipeline
-- [ ] 实现 DPO 训练并与 PPO 对比
-- [ ] 引入医疗安全性评估指标
-- [ ] 尝试 GRPO 等新方法
-- [ ] 整理实验报告与可视化
-
----
-
-## 🙏 致谢
-
-本项目基于 [shibing624/MedicalGPT](https://github.com/shibing624/MedicalGPT) 开发，感谢原作者提供的高质量训练框架和数据支持。
-
-核心参考：
-- [Andrej Karpathy - State of GPT](https://karpathy.ai/stateofgpt.pdf)
-- [DPO: Direct Preference Optimization](https://arxiv.org/pdf/2305.18290.pdf)
-- [GRPO: Group Relative Policy Optimization](https://arxiv.org/pdf/2402.03300)
-
----
-
-## 📄 License
-
-本项目遵循 [Apache License 2.0](LICENSE) 开源协议。
+## 面试与项目展示指北
+*“不跑一遍，面试一定露馅”* —— 本项目不仅跑通了代码，更打通了数据流向与评估验证的闭环。你可以清晰地阐述自己如何通过清洗某批数据，使得 C-Eval 医疗得分提高了 xxx，以及解决了训练过程中由于 Batch Size 或学习率导致的 Loss 抖动问题。

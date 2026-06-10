@@ -134,3 +134,8 @@ dmypy.json
 outputs-dpo-qwen-v1/
 cache/
 outputs-*/
+merged-*/
+*.safetensors
+*.bin
+wandb_key
+ssh.md
