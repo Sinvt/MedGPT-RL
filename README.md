@@ -32,7 +32,7 @@ cd 2_Model_Training
 python demo/gradio_demo.py --base_model merged-sft-qwen-0.5b --lora_model outputs-ppo-qwen-0.5b
 ```
 
-## 面试与项目展示指北
+## 面试与项目展示指南
 *”不跑一遍，面试一定露馅”* —— 本项目不仅跑通了代码，更打通了数据流向与评估验证的闭环。你可以清晰地阐述自己如何通过清洗某批数据，使得 C-Eval 医疗得分提高了 xxx，以及解决了训练过程中由于 Batch Size 或学习率导致的 Loss 抖动问题。
 
 ## 致谢
