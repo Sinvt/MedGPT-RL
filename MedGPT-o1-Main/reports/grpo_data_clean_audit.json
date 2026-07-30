@@ -1,0 +1,16 @@
+{
+    "total_input_records": 7159,
+    "total_unique_prompts": 7042,
+    "major_conflict_groups": 10,
+    "major_conflict_records": 81,
+    "manual_review_groups": 22,
+    "manual_review_records": 44,
+    "exact_duplicates_removed": 24,
+    "final_clean_records": 7010,
+    "train_size": 6308,
+    "val_size": 702,
+    "assertions": {
+        "single_answer_per_prompt": true,
+        "train_val_mutually_exclusive": true
+    }
+}

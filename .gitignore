@@ -139,3 +139,19 @@ merged-*/
 *.bin
 wandb_key
 ssh.md
+
+# Project-specific generated artifacts
+MedGPT-o1-Main/data/
+MedGPT-o1-Main/outputs/
+MedGPT-o1-Main/miniconda.sh
+MedGPT-o1-Main/**/__pycache__/
+MedGPT-o1-Main/**/*.pyc
+MedGPT-o1-Main/reports/**/*.jsonl
+MedGPT-o1-Main/reports/**/samples_*.jsonl
+MedGPT-o1-Main/reports/**/requests_*.jsonl
+MedGPT-o1-Main/reports/**/rollout_texts_cache.jsonl
+
+# Local review / interview notes
+项目1复盘/
+项目面试问题.md
+tasks.txt

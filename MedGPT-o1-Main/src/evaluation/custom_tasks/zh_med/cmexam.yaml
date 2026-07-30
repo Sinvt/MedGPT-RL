@@ -1,0 +1,30 @@
+task: cmexam
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    val: "data/raw/eval/cmexam/cmexam_validation.jsonl"
+output_type: generate_until
+training_split: null
+validation_split: null
+test_split: val
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+generation_kwargs:
+  until:
+    - "<|im_end|>"
+    - "<|endoftext|>"
+  do_sample: false
+  temperature: 0.0
+  max_gen_toks: 2048
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "regex"
+        regex_pattern: "(?:^\\s*|(?:最终答案|答案|最终选择|选择|选项)\\s*(?:(?:[:：]?\\s*(?:应为|为|是|选择|选|选项)\\s*[:：]?)|[:：])?\\s*)([A-J](?:\\s*[,，、/|和及与]?\\s*[A-J])*)(?=\\s*$|\\s*(?:。|；|;|！|!|,|，))"
+      - function: "take_first"
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true

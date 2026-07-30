@@ -1,46 +1,156 @@
-# Medical-GPT 医疗大模型全流程开源项目
+# MedGPT-o1
 
-本项目展示了一个完整的垂直领域大模型训练与评测闭环。包含了从**数据构建**到**模型训练**，再到**自动化评测**的完整工作流。基于此套流程，可以快速复现并改进微调模型的性能，最终打造出一个具备强大医疗知识与推理能力的“赛博医生”。
+MedGPT-o1 is a Chinese medical o1-style reasoning project built on Qwen2.5-7B-Instruct. It implements an end-to-end post-training pipeline for medical reasoning: data construction, supervised fine-tuning, GRPO reinforcement learning, LLM-Judge reward modeling, vLLM-assisted rollout, and multi-level evaluation.
 
-## 架构说明
+> This repository focuses on the training pipeline, reward design, evaluation code, and experiment reports. Large datasets, model checkpoints, and generated rollout caches are intentionally excluded from Git.
 
-本项目分为三个核心模块，对应大模型工程师在业务落地时的三大核心链路：
+## Highlights
 
-### 📁 1. 数据构建 (`1_Data_Construction/`)
-数据是模型的基础。本目录用于存放数据爬取、清洗、格式化转换、向量化匹配召回以及偏好数据构造的脚本。
-- **思路参考**：`HealthAI-2025` 数据构造方法。
-- **目标**：为 SFT（监督微调）和 PPO（强化学习）阶段提供高质量、格式对齐的数据源。
+- Built a four-stage medical reasoning data pipeline: MCQ -> OpenQA -> Complex CoT -> RFT.
+- Constructed a 6.8K teacher CoT SFT-v1 dataset and a 9.2K SFT-v2-A dataset by combining teacher-distilled CoT with 2,372 self-verified RFT trajectories.
+- Implemented LoRA SFT and GRPO training with TRL, PEFT, Transformers, and PyTorch.
+- Designed a V3 composite reward for Chinese medical RLVR: format constraints, exact-match shortcut, and MiMo LLM-Judge semantic scoring.
+- Integrated vLLM for high-throughput rollout generation and built cache/rate-limit safeguards for external Judge calls.
+- Built a three-level evaluation suite: internal OpenQA/ORM, public medical benchmarks, and custom Chinese medical tasks for CMB/CMExam.
+- Achieved a CMExam full-evaluation improvement from 75.54% to 80.56% (+5.02pp) relative to the base model.
 
-### 📁 2. 模型训练 (`2_Model_Training/`)
-核心炼丹炉。包含完整的 `SFT -> Reward Model -> PPO` 三阶段训练管线代码及执行脚本。
-- 基于开源项目 `MedicalGPT` 进行深度适配和超参调优。
-- 支持 `Qwen` 等主流大模型基座的 LoRA/QLoRA 训练。
-- 提供终端及 Web 网页（Gradio）交互测试脚本。
+## Project Structure
 
-### 📁 3. 模型评测 (`3_Evaluation/`)
-模型的考官。使用业内公认的 `lm-evaluation-harness` 评测框架。
-- 支持加载合并后的权重（Base+LoRA）或直接挂载 Adapter 进行测试。
-- 可对中文医疗榜单（如 `ceval-valid` 的医疗子项、`cmmlu`、`medmcqa` 等）进行打分。
-- **目标**：用量化的分数取代主观判断，为每一步数据迭代和算法优化提供可靠的证据链。
-
-## 快速开始
-
-进入各个子模块，查看其内部的具体运行说明。
-例如，要启动网页版对话测试：
-```bash
-cd 2_Model_Training
-python demo/gradio_demo.py --base_model merged-sft-qwen-0.5b --lora_model outputs-ppo-qwen-0.5b
+```text
+MedGPT-o1-Main/
++-- configs/              # training and runtime configs
++-- prompts/              # prompts for OpenQA conversion, CoT generation, and judging
++-- scripts/              # setup, model merge, export, and utility scripts
++-- src/
+|   +-- data_pipeline/    # MCQ -> OpenQA -> CoT -> RFT -> RL/DAPO data builders
+|   +-- training/         # SFT, GRPO, and DAPO-lite training entrypoints
+|   +-- rewards/          # hard constraints, MiMo Judge, and composite reward
+|   +-- evaluation/       # inference, internal ORM eval, lm-eval custom tasks
++-- tests/                # reward and judge tests
++-- reports/              # compact experiment reports and evaluation summaries
++-- implementation_plan.md
++-- PROJECT_LOG.md
++-- README.md
 ```
 
-## 面试与项目展示指南
-*”不跑一遍，面试一定露馅”* —— 本项目不仅跑通了代码，更打通了数据流向与评估验证的闭环。你可以清晰地阐述自己如何通过清洗某批数据，使得 C-Eval 医疗得分提高了 xxx，以及解决了训练过程中由于 Batch Size 或学习率导致的 Loss 抖动问题。
+## Pipeline Overview
 
-## 致谢
+```text
+80K Chinese medical MCQs
+-> MCQ-to-OpenQA rewriting
+-> Complex CoT teacher distillation
+-> ORM and rule-based filtering
+-> SFT-v1 data
+-> RFT rejection sampling with vLLM
+-> SFT-v2-A data
+-> GRPO / DAPO-lite RLVR training
+-> internal ORM + public benchmark + CMB/CMExam evaluation
+```
 
-本项目在开发过程中参考和使用了以下优秀的开源项目，在此表示诚挚的感谢：
+## Core Components
 
-- **[HealthAI-2025](https://github.com/yuandaxia2001/HealthAI-2025)** — 数据构造思路借鉴了该项目在临床医学数据处理中的向量检索筛选与知识蒸馏方法，为本项目的数据构建管线提供了重要参考。
-- **[MedicalGPT](https://github.com/shibing624/MedicalGPT)** — 项目基于 MedicalGPT（Apache License 2.0）进行深度适配和超参调优，其完善的 SFT / RLHF / DPO 训练框架是模型训练模块的核心基础。
-- **[lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)** — 使用 EleutherAI 开源的评测框架（MIT License）作为模型评测的统一基准，实现了对多维度医学场景的客观量化评估。
+### Data Engineering
 
-各项目的代码版权及开源协议归其原作者所有。
+The data pipeline converts multiple-choice Chinese medical exam questions into open-ended, verifiable medical reasoning questions. It standardizes answers and aliases, generates Complex CoT traces with a teacher model, filters low-quality samples with ORM and local rules, and uses vLLM-based rejection sampling to mine self-verified student CoT.
+
+Key outputs from the completed experiments:
+
+| Stage | Output |
+| --- | ---: |
+| Teacher CoT SFT-v1 | 6.8K samples |
+| RFT candidate CoT | 42,096 generations |
+| Strict ORM RFT positives | 2,372 samples |
+| SFT-v2-A | 9.2K samples |
+
+### Training and Reward Modeling
+
+The project uses LoRA-based SFT and GRPO training rather than full-parameter fine-tuning. The GRPO pipeline starts from an SFT policy, performs online sampling, computes rewards, estimates advantages, and updates the policy through TRL's `GRPOTrainer`.
+
+The V3 reward model addresses sparse hard-ORM rewards in medical short-answer tasks:
+
+```text
+invalid format        -> -0.25
+exact final answer    -> 2.15
+medical contradiction -> 0.00
+semantic non-exact    -> 0.15 + 1.70 * semantic_score
+```
+
+This design improves reward separability for semantically equivalent medical answers while preserving strict exact-match shortcuts for unambiguous cases.
+
+### Evaluation
+
+The project separates evaluation into three layers:
+
+| Layer | Purpose |
+| --- | --- |
+| Internal OpenQA/ORM | Fast training diagnostics for answer extraction, format, and reward behavior |
+| Public benchmarks | MMLU-Pro, CMMLU, MedQA, MedMCQA, PubMedQA, GSM8K |
+| Chinese medical tasks | Custom CMB and CMExam tasks based on lm-evaluation-harness |
+
+For Chinese medical multiple-choice evaluation, the repository includes custom answer extraction and normalization logic to support single-choice and multi-choice outputs, avoiding invalid zero-score artifacts from overly narrow regex parsing.
+
+## Results Snapshot
+
+Chinese medical evaluation is the most relevant evaluation layer for this project because the training data is primarily Chinese medical exam data.
+
+| Model | CMB | CMExam |
+| --- | ---: | ---: |
+| Qwen2.5-7B-Instruct Base | 71.43% | 75.54% |
+| SFT-v1 | 70.71% | 80.36% |
+| GRPO-v1 | 71.43% | 80.44% |
+| SFT-v2-A | 70.00% | 80.52% |
+| GRPO-V3 | 70.36% | 80.56% |
+
+The strongest and most stable result is the CMExam improvement from 75.54% to 80.56% (+5.02pp). Public benchmark changes are more mixed and should be interpreted as local improvements and stability checks rather than a broad claim of across-the-board benchmark gains.
+
+## Quick Start
+
+Install dependencies:
+
+```bash
+cd MedGPT-o1-Main
+pip install -r requirements.txt
+```
+
+Run data construction scripts in order:
+
+```bash
+python src/data_pipeline/01_mcq_to_openqa.py
+python src/data_pipeline/02_complex_cot_gen.py
+python src/data_pipeline/02_5_cot_filtering.py
+python src/data_pipeline/03_build_sft_dataset.py
+python src/data_pipeline/04_build_rl_dataset.py
+```
+
+Train SFT:
+
+```bash
+python src/training/train_sft.py \
+  --base_model /path/to/Qwen2.5-7B-Instruct \
+  --train_file data/final/sft/sft_train.jsonl \
+  --val_file data/final/sft/sft_val.jsonl \
+  --output_dir outputs/sft_qwen2_5_7b_lora_v1
+```
+
+Train GRPO:
+
+```bash
+python src/training/train_grpo.py \
+  --base_model /path/to/Qwen2.5-7B-Instruct \
+  --sft_lora_path outputs/sft_v2_a_lora \
+  --train_file data/final/rl_v3/rl_clean_train.jsonl \
+  --val_file data/final/rl_v3/rl_clean_val.jsonl \
+  --output_dir outputs/grpo_qwen2_5_7b_v3
+```
+
+Run Chinese medical evaluation:
+
+```bash
+bash src/evaluation/run_eval_zh_med.sh grpo_v3
+```
+
+## Notes
+
+- Model weights, optimizer states, raw data, generated datasets, rollout caches, and local environment installers are ignored by Git.
+- MiMo Judge calls require API credentials and rate-limit configuration in the runtime environment.
+- GRPO-V3 is best described as a successful RLVR engineering and reward-design experiment with limited but measurable Chinese medical benchmark gains, not as a universal public-benchmark breakthrough.

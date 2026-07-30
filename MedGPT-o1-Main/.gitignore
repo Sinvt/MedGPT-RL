@@ -1,0 +1,46 @@
+# ============================
+# MedGPT-o1 .gitignore
+# ============================
+
+# 数据目录（大文件不入库）
+data/
+
+# 训练输出
+outputs/
+*.pt
+*.bin
+*.safetensors
+*.ckpt
+
+# Wandb
+wandb/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# 环境
+.env
+*.env
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 旧代码（复用完后删除）
+1_Data_Construction/
+2_Model_Training/
+3_Evaluation/

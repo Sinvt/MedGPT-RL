@@ -1,0 +1,287 @@
+{
+  "train_file": "D:\\Vscode\\Project\\Medical-GPT\\MedGPT-o1-Main\\data\\final\\rl_v3\\rl_clean_train.jsonl",
+  "val_file": "D:\\Vscode\\Project\\Medical-GPT\\MedGPT-o1-Main\\data\\final\\rl_v3\\rl_clean_val.jsonl",
+  "rollout_file": "D:\\Vscode\\Project\\Medical-GPT\\MedGPT-o1-Main\\reports\\dapo\\sft_v2_a_full_rollout_for_dapo.jsonl",
+  "reward_field": "v3_reward",
+  "rollout_groups": 4429,
+  "source_train_rows": 6308,
+  "effective_ids": 3467,
+  "written_train_rows": 3467,
+  "missing_ids_in_source_train": 0,
+  "min_group_size": 2,
+  "min_std": 1e-06,
+  "min_reward": null,
+  "max_reward": null,
+  "source_distribution": {
+    "cmexam": 1966,
+    "medqa_zh": 1501
+  },
+  "std_buckets": {
+    "zero": 962,
+    "(0,0.05)": 46,
+    "[0.05,0.2)": 717,
+    ">=0.2": 2704
+  },
+  "top_effective_examples": [
+    {
+      "id": "openqa_cmexam_cmexam_002446",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001100",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001148",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001481",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_002368",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_003251",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001443",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001040",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_000033",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_004161",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_000929",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_medqa_zh_medqa_zh_000746",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001995",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001768",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_002954",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_001269",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    },
+    {
+      "id": "openqa_medqa_zh_medqa_zh_002488",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_002824",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_medqa_zh_medqa_zh_000648",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "exact": 2,
+        "none": 2
+      }
+    },
+    {
+      "id": "openqa_cmexam_cmexam_000316",
+      "count": 4,
+      "min": 0.0,
+      "max": 2.15,
+      "mean": 1.075,
+      "std": 1.075,
+      "unique_rewards": 2,
+      "match_types": {
+        "none": 2,
+        "exact": 2
+      }
+    }
+  ]
+}

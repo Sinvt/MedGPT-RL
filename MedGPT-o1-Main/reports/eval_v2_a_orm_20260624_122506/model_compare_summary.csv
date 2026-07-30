@@ -1,0 +1,2 @@
+model,samples,think_hit_rate,final_prefix_rate,complete_format_rate,orm_hit_rate,orm_exact_hit_rate,avg_format_reward,avg_accuracy_reward,avg_length_reward,avg_total_reward,avg_seconds,avg_think_chars,new_seconds
+sft_v2_a,143,1.0,1.0,1.0,0.2867132867132867,0.2097902097902098,1.5,0.5580419580419579,0.399999999999999,2.458041958041954,5.592268531468534,214.51048951048952,799.84
